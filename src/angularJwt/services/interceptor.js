@@ -5,14 +5,28 @@
     this.authPrefix = 'Bearer ';
     this.tokenGetter = function() {
       return null;
-    }
+    };
+    this.intercept = function() {
+      return true;
+    };
 
     var config = this;
 
     this.$get = function ($q, $injector, $rootScope) {
+      function intercept(self, requestConfig) {
+        if (requestConfig.skipAuthorization) {
+          return false;
+        }
+
+        return $injector.invoke(config.intercept, self, {
+          config : requestConfig
+        });
+      }
+
       return {
         request: function (request) {
-          if (request.skipAuthorization) {
+          // proceed only if intercepting is desired
+          if ( ! intercept(this, request)) {
             return request;
           }
 
@@ -35,7 +49,8 @@
         },
         responseError: function (response) {
           // handle the case where the user is not authenticated
-          if (response.status === 401) {
+          // but only if intercepting is desired
+          if (response.status === 401 && intercept(this, response.config)) {
             $rootScope.$broadcast('unauthenticated', response);
           }
           return $q.reject(response);
