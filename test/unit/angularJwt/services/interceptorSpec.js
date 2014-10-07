@@ -96,40 +96,53 @@ describe('interceptor', function() {
     });
   });
 
-  it('should not intercept if intercept is defined', function (done) {
+  it('should respect `intercept` result', function (done) {
     module( function ($httpProvider, jwtInterceptorProvider) {
-      jwtInterceptorProvider.tokenGetter = function() {
+      jwtInterceptorProvider.tokenGetter = function (config) {
         return 110;
       };
-      jwtInterceptorProvider.intercept = function(config) {
-        return /pls-intercept$/.test(config.url);
+      jwtInterceptorProvider.intercept = function (config) {
+        return /true$/.test(config.url);
       };
       $httpProvider.interceptors.push('jwtInterceptor');
     });
 
-    inject(function ($q, $http, $httpBackend) {
-      var deferred = $q.defer();
+    inject(function ($q, $http, $httpBackend, $rootScope) {
+      var unauthenticated = 0;
 
-      $http({ skipAuthorization: true, url: '/skip/pls-intercept'})
-        .error(function (data, status) {
-          expect(status).to.be.equal(401);
-          deferred.resolve();
-        });
+      $rootScope.$on('unauthenticated', function () {
+        unauthenticated++;
+      });
+
+      var def1 = $q.defer();
+      var def2 = $q.defer();
 
       $q.all([
-        deferred.promise,
-        $http({ skipAuthorization: true, url: '/skip/pls-dont-intercept'})
-          .success(function (data) {
-            expect(data).to.be.equal('yaay');
-          })
+        def1.promise,
+        def2.promise,
       ]).then(function () {
+        expect(unauthenticated).to.be.equal(1);
         done();
       });
 
-      $httpBackend.expectGET('/skip/pls-intercept', function (headers) {
-        return !headers.Authorization;
+      $http({ url: '/intercept/true'})
+        .error(function (data, status) {
+          expect(status).to.be.equal(401);
+          def1.resolve();
+        });
+
+      $httpBackend.whenGET('/intercept/true', function (headers) {
+        return headers.Authorization && headers.Authorization !== 111;
       }).respond(401, '');
-      $httpBackend.expectGET('/skip/pls-dont-intercept', function (headers) {
+      $httpBackend.flush();
+
+      $http({ url: '/intercept/false'})
+        .success(function (data) {
+          expect(data).to.be.equal('yaay');
+          def2.resolve();
+        });
+
+      $httpBackend.whenGET('/intercept/false', function (headers) {
         return !headers.Authorization;
       }).respond(200, 'yaay');
       $httpBackend.flush();
