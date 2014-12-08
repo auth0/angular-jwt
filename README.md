@@ -92,7 +92,7 @@ angular.module('app', ['angular-jwt'])
 .config(function Config($httpProvider, jwtInterceptorProvider) {
   jwtInterceptorProvider.tokenGetter = function() {
     return localStorage.getItem('id_token');
-  }
+  };
   $httpProvider.interceptors.push('jwtInterceptor');
 })
 .controller('Controller', function Controller($http) {
@@ -104,6 +104,26 @@ angular.module('app', ['angular-jwt'])
   });
 }
 ````
+
+```js
+angular.module('app', ['angular-jwt'])
+.config(function Config($httpProvider, jwtInterceptorProvider) {
+  jwtInterceptorProvider.tokenGetter = function() {
+    return localStorage.getItem('id_token');
+  };
+  jwtInterceptorProvider.intercept = function(config) {
+    return ! /hola$/.test(config.url);
+  };
+  $httpProvider.interceptors.push('jwtInterceptor');
+})
+.controller('Controller', function Controller($http) {
+  // This request will NOT send the token as the config didn't pass `intercept`
+  $http({
+    url: '/hola',
+    method: 'GET'
+  });
+}
+```
 
 ### Sending different tokens based on URLs
 
