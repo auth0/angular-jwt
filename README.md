@@ -166,12 +166,17 @@ As sometimes we need to get first the `id_token` in order to send it, we can ret
 ````js
 angular.module('app', ['angular-jwt'])
 .config(function Config($httpProvider, jwtInterceptorProvider) {
+  var refreshPromise;
   jwtInterceptorProvider.tokenGetter = ['jwtHelper', '$http', function(jwtHelper, $http) {
+    if (refreshPromise) {
+      return refreshPromise;
+    }
     var idToken = localStorage.getItem('id_token');
     var refreshToken = localStorage.getItem('refresh_token');
+
     if (jwtHelper.isTokenExpired(idToken)) {
       // This is a promise of a JWT id_token
-      return $http({
+      refreshPromise = $http({
         url: '/delegation',
         // This makes it so that this request doesn't send the JWT
         skipAuthorization: true,
@@ -180,9 +185,12 @@ angular.module('app', ['angular-jwt'])
             grant_type: 'refresh_token',
             refresh_token: refreshToken 
         }
-      }).then(function(response) {
+      })
+
+    return refreshPromise.then(function(response) {
         var id_token = response.data.id_token;
         localStorage.setItem('id_token', id_token);
+        refreshPromise = null
         return id_token;
       });
     } else {
