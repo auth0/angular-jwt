@@ -185,14 +185,13 @@ angular.module('app', ['angular-jwt'])
             grant_type: 'refresh_token',
             refresh_token: refreshToken 
         }
-      })
-
-    return refreshPromise.then(function(response) {
+      }).then(function(response) {
         var id_token = response.data.id_token;
         localStorage.setItem('id_token', id_token);
         refreshPromise = null
         return id_token;
       });
+      return refreshPromise;
     } else {
       return idToken;
     }
