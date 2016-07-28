@@ -4,16 +4,35 @@
     this.urlParam = null;
     this.authHeader = 'Authorization';
     this.authPrefix = 'Bearer ';
+    this.whiteListedDomains = [];
     this.tokenGetter = function() {
       return null;
-    }
+    };
 
     var config = this;
 
-    this.$get = function ($q, $injector, $rootScope) {
+
+    this.$get = function ($q, $injector, $rootScope, urlUtils) {
+
+      function isSafe (url) {
+        var hostname = urlUtils.urlResolve(url).hostname.toLowerCase();
+        for (var i = 0; i < config.whiteListedDomains.length; i++) {
+          var domain = config.whiteListedDomains[i].toLowerCase();
+          if (domain === hostname) {
+            return true;
+          }
+        }
+
+        if (urlUtils.isSameOrigin(url)) {
+          return true;
+        }
+
+        return false;
+      }
+
       return {
         request: function (request) {
-          if (request.skipAuthorization) {
+          if (request.skipAuthorization || !isSafe(request.url)) {
             return request;
           }
 
