@@ -105,7 +105,7 @@ angular.module('app', ['angular-jwt'])
   // This request will NOT send the token as it has skipAuthentication
   $http({
     url: '/hola',
-    skipAuthorization: true
+    skipAuthorization: true,
     method: 'GET'
   });
 })
