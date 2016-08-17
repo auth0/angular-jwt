@@ -139,7 +139,7 @@ angular
 
 ### Not Sending the JWT for Template Requests
 
-The `tokenGetter` method can have a parameter `config` injected by angular-jwt. This parameter is the configuration object of the current request.
+The `tokenGetter` method can have a parameter `options` injected by angular-jwt. This parameter is the configuration object of the current request.
 
 By default the interceptor will send the JWT for all HTTP requests. This includes any `ng-include` directives or 
 `templateUrls` defined in a `state` in the `stateProvider`. If you want to avoid sending the JWT for these requests you
@@ -150,9 +150,9 @@ angular
   .module('app', ['angular-jwt'])
   .config(function Config($httpProvider, jwtOptionsProvider, jwtInterceptorProvider) {
     jwtOptionsProvider.config({
-      tokenGetter: ['config', function(config) {
+      tokenGetter: ['options', function(options) {
         // Skip authentication for any requests ending in .html
-        if (config.url.substr(config.url.length - 5) == '.html') {
+        if (options.url.substr(options.url.length - 5) == '.html') {
           return null;
         }
         
@@ -171,8 +171,8 @@ angular
   .module('app', ['angular-jwt'])
   .config(function Config($httpProvider, jwtOptionsProvider, jwtInterceptorProvider) {
     jwtOptionsProvider.config({
-      tokenGetter: ['config', function(config) {
-        if (config.url.indexOf('http://auth0.com') === 0) {
+      tokenGetter: ['options', function(options) {
+        if (options.url.indexOf('http://auth0.com') === 0) {
           return localStorage.getItem('auth0.id_token');
         } else {
           return localStorage.getItem('id_token');
