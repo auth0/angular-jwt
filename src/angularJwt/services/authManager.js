@@ -16,7 +16,9 @@ angular.module('angular-jwt.authManager', [])
       }
 
       function checkAuthOnRefresh() {
-        $rootScope.$on('$locationChangeStart', function () {
+        $rootScope.$on('$locationChangeStart', function (event, newUrl, oldUrl, newState, oldState) {
+          var parser = document.createElement('a'),
+            oldHash, newHash;
           var tokenGetter = config.tokenGetter;
           var token = null;
           if (Array.isArray(tokenGetter)) {
@@ -27,6 +29,20 @@ angular.module('angular-jwt.authManager', [])
           if (token) {
             if (!jwtHelper.isTokenExpired(token)) {
               authenticate();
+            } else {
+              parser.href = oldUrl;
+              oldHash = parser.hash;
+              parser.href = newUrl;
+              newHash = parser.hash;
+              if((oldHash.substring(2, 14) === 'access_token') || (oldHash === "" && newHash === "#/")) {
+                // We only got our hash cleared by lock's auth callback. We ignore
+                // this
+                return
+              }
+              if (config.redirectWhenTokenExpired) {
+                $location.path('/login');
+                unauthenticate();
+              }
             }
           }
         });
