@@ -16,7 +16,10 @@ angular.module('angular-jwt.authManager', [])
       }
 
       function checkAuthOnRefresh() {
-        $rootScope.$on('$locationChangeStart', function () {
+        // Check ngRouter or UI-Router
+        var eventName = ($injector.has('$state')) ? '$stateChangeStart' : '$locationChangeStart';
+
+        $rootScope.$on(eventName, function (event, to) {
           var tokenGetter = config.tokenGetter;
           var token = null;
           if (Array.isArray(tokenGetter)) {
@@ -24,9 +27,12 @@ angular.module('angular-jwt.authManager', [])
           } else {
             token = config.tokenGetter();
           }
+
           if (token) {
-            if (!jwtHelper.isTokenExpired(token)) {
-              authenticate();
+            if (!$injector.has('$state') || (to.data && to.data.requiresLogin)) {
+              if (!jwtHelper.isTokenExpired(token)) {
+                authenticate();
+              }
             }
           }
         });
