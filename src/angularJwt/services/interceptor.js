@@ -4,8 +4,16 @@ angular.module('angular-jwt.interceptor', [])
     this.urlParam;
     this.authHeader;
     this.authPrefix;
+    this.forceHeadersUpdate = false;
     this.whiteListedDomains;
     this.tokenGetter;
+    this.urlParam = null;
+    this.authHeader = 'Authorization';
+    this.authPrefix = 'Bearer ';
+    this.forceHeadersUpdate = false;
+    this.tokenGetter = function() {
+      return null;
+    };
 
     var config = this;
 
@@ -47,7 +55,7 @@ angular.module('angular-jwt.interceptor', [])
           } else {
             request.headers = request.headers || {};
             // Already has an Authorization header
-            if (request.headers[options.authHeader]) {
+            if (!options.forceHeadersUpdate && request.headers[options.authHeader]) {
               return request;
             }
           }
@@ -75,5 +83,5 @@ angular.module('angular-jwt.interceptor', [])
           return $q.reject(response);
         }
       };
-    }
+    };
   });

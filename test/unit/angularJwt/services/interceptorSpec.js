@@ -22,15 +22,15 @@ describe('interceptor', function() {
     });
 
     inject(function ($http, $httpBackend) {
-        $http({url: '/hello'}).success(function (data) {
-          expect(data).to.be.equal('hello');
-          done();
-        });
+      $http({url: '/hello'}).success(function (data) {
+        expect(data).to.be.equal('hello');
+        done();
+      });
 
-        $httpBackend.expectGET('/hello', function (headers) {
-          return headers.Authorization === 'Bearer 123';
-        }).respond(200, 'hello');
-        $httpBackend.flush();
+      $httpBackend.expectGET('/hello', function (headers) {
+        return headers.Authorization === 'Bearer 123';
+      }).respond(200, 'hello');
+      $httpBackend.flush();
     });
 
   });
@@ -76,15 +76,15 @@ describe('interceptor', function() {
     });
 
     inject(function ($http, $httpBackend) {
-        $http({url: '/hello'}).success(function (data) {
-          expect(data).to.be.equal('hello');
-          done();
-        });
+      $http({url: '/hello'}).success(function (data) {
+        expect(data).to.be.equal('hello');
+        done();
+      });
 
-        $httpBackend.expectGET('/hello', function (headers) {
-          return headers.Authorization === 'Bearer 345';
-        }).respond(200, 'hello');
-        $httpBackend.flush();
+      $httpBackend.expectGET('/hello', function (headers) {
+        return headers.Authorization === 'Bearer 345';
+      }).respond(200, 'hello');
+      $httpBackend.flush();
     });
 
   });
@@ -95,15 +95,15 @@ describe('interceptor', function() {
     });
 
     inject(function ($http, $httpBackend) {
-        $http({url: '/hello'}).success(function (data) {
-          expect(data).to.be.equal('hello');
-          done();
-        });
+      $http({url: '/hello'}).success(function (data) {
+        expect(data).to.be.equal('hello');
+        done();
+      });
 
-        $httpBackend.expectGET('/hello', function (headers) {
-          return !headers.Authorization;
-        }).respond(200, 'hello');
-        $httpBackend.flush();
+      $httpBackend.expectGET('/hello', function (headers) {
+        return !headers.Authorization;
+      }).respond(200, 'hello');
+      $httpBackend.flush();
     });
 
   });
@@ -118,16 +118,61 @@ describe('interceptor', function() {
     });
 
     inject(function ($http, $httpBackend) {
-        $http({url: '/hello'}).success(function (data) {
-          expect(data).to.be.equal('hello');
-          done();
-        });
+      $http({url: '/hello'}).success(function (data) {
+        expect(data).to.be.equal('hello');
+        done();
+      });
 
-        $httpBackend.expectGET('/hello?access_token=123', function (headers) {
-          return headers.Authorization === undefined;
-        }).respond(200, 'hello');
-        $httpBackend.flush();
+      $httpBackend.expectGET('/hello?access_token=123', function (headers) {
+        return headers.Authorization === undefined;
+      }).respond(200, 'hello');
+      $httpBackend.flush();
     });
 
   });
+
+  it('should populate authorization header with tokenGetter when the configuration forceHeadersUpdate option is set to true', function(done){
+    module( function ($httpProvider, jwtInterceptorProvider) {
+      jwtInterceptorProvider.forceHeadersUpdate = true;
+      jwtInterceptorProvider.tokenGetter = function() {
+        return 123;
+      };
+      $httpProvider.interceptors.push('jwtInterceptor');
+    });
+
+    inject(function ($http, $httpBackend) {
+      $http({url: '/hello', headers:{'Authorization': '456'}}).success(function (data) {
+        expect(data).to.be.equal('hello');
+        done();
+      });
+
+      $httpBackend.expectGET('/hello', function (headers) {
+        return headers.Authorization === 'Bearer 123';
+      }).respond(200, 'hello');
+      $httpBackend.flush();
+    });
+  });
+
+  it('should not populate authorization header with tokenGetter when authorization header already exists', function(done){
+    module( function ($httpProvider, jwtInterceptorProvider) {
+      jwtInterceptorProvider.tokenGetter = function() {
+        return 123;
+      };
+      $httpProvider.interceptors.push('jwtInterceptor');
+    });
+
+    inject(function ($http, $httpBackend) {
+      $http({url: '/hello', headers:{'Authorization': '456'}}).success(function (data) {
+        expect(data).to.be.equal('hello');
+        done();
+      });
+
+      $httpBackend.expectGET('/hello', function (headers) {
+        return headers.Authorization === '456';
+      }).respond(200, 'hello');
+      $httpBackend.flush();
+    });
+  });
+
+
 });
