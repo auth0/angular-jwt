@@ -1,3 +1,20 @@
+/**
+ * Add a module for use with commonjs(WebPack)
+ * Add to your webpack.config.js with:
+ * 
+ module.exports = {
+  resolve: {
+    alias: {
+      "angular-jwt": 'angular-jwt/dist/angular-jwt'
+    }
+  }
+ }
+ */
+if (typeof module !== "undefined" && typeof exports !== "undefined" && module.exports ===
+  exports) {
+  module.exports = 'angular-jwt';
+}
+
 (function() {
 
 
