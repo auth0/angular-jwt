@@ -1,5 +1,5 @@
  angular.module('angular-jwt.jwt', [])
-  .service('jwtHelper', function($window) {
+  .service('jwtHelper', ['$window', function($window) {
 
     this.urlBase64Decode = function(str) {
       var output = str.replace(/-/g, '+').replace(/_/g, '/');
@@ -53,4 +53,4 @@
       // Token expired?
       return !(d.valueOf() > (new Date().valueOf() + (offsetSeconds * 1000)));
     };
-  });
+  }]);
