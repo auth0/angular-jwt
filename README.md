@@ -290,9 +290,7 @@ Access to various client-side routes can be limited to users who have an unexpir
   controller: 'PingController',
   templateUrl: 'components/ping/ping.html',
   controllerAs: 'vm',
-  data: {
-    requiresLogin: true
-  }
+  requiresLogin: true
 });
 
 ...
