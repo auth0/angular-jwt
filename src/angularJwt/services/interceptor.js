@@ -35,7 +35,7 @@ angular.module('angular-jwt.interceptor', [])
 
       return {
         request: function (request) {
-          if (request.skipAuthorization || !isSafe(request.url)) {
+          if (request.skipAuthorization || isSafe(request.url)) {
             return request;
           }
 
