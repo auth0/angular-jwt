@@ -66,6 +66,24 @@ angular.module('angular-jwt.authManager', [])
           unauthenticate();
         });
       }
+      
+      function verifyRoute(event, next) {
+        if (!next) {
+          return false;
+        }
+
+        var routeData = (next.$$route) ? next.$$route : next.data;
+
+        if (routeData && routeData.requiresLogin === true) {
+          if (!$rootScope.isAuthenticated) {
+            config.unauthenticatedRedirector($location);
+            event.preventDefault();
+          }
+        }
+      }
+
+      var eventName = ($injector.has('$state')) ? '$stateChangeStart' : '$routeChangeStart';
+      $rootScope.$on(eventName, verifyRoute);
 
       function verifyRoute(event, next) {
         if (!next) {
