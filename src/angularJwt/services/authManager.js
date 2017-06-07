@@ -84,13 +84,20 @@ angular.module('angular-jwt.authManager', [])
         var route = transition.to();
         var $state = transition.router.stateService;
           if (route && route.data && route.data.requiresLogin === true && !isAuthenticated()) {
-            return $state.target(config.loginPath);
+            // Ensure that transition processing is finished before calling redirector
+            transition.promise.catch(function (data) {
+              invokeRedirector(config.unauthenticatedRedirector)
+            });
+
+            // Simple 'return false` can be done here, but throwing string results in helpful error
+            // message being logged by ui-router trace instead of generic 'Hook aborted transition'
+            throw 'JWT: unauthenticated';
           }
       }
 
       if ($injector.has('$transitions')) {
         var $transitions = $injector.get('$transitions');
-        $transitions.onStart({}, verifyState);
+        $transitions.onBefore({}, verifyState);
       } else {
         var eventName = ($injector.has('$state')) ? '$stateChangeStart' : '$routeChangeStart';
         $rootScope.$on(eventName, verifyRoute);
