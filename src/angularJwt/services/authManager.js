@@ -27,7 +27,9 @@ angular.module('angular-jwt.authManager', [])
         var token = invokeToken(config.tokenGetter);
         if (token) {
           return !jwtHelper.isTokenExpired(token);
-        }
+        } else {
+						return false;
+					}
       }
 
       $rootScope.isAuthenticated = false;
@@ -74,7 +76,7 @@ angular.module('angular-jwt.authManager', [])
 
         var routeData = (next.$$route) ? next.$$route : next.data;
 
-        if (routeData && routeData.requiresLogin === true && !isAuthenticated()) {
+        if (routeData && routeData.data && routeData.data.requiresLogin === true && !isAuthenticated()) {
           event.preventDefault();
           invokeRedirector(config.unauthenticatedRedirector);
         }
