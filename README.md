@@ -140,7 +140,7 @@ angular
 
 ### Whitelisting Domains
 
-If you are calling an API that is on a domain other than your application's origin, you will need to whitelist it.
+If you are calling an API that is on a domain other than your application's origin, you will need to whitelist it. Domains are forced to lowercase and compared using lowercase.
 
 ```js
 angular
@@ -157,7 +157,7 @@ angular
 
 Note that you only need to provide the domain. Protocols (ex: `http://`) and port numbers should be omitted.
 
-You can also specify the domain using a regular expression.
+You can also specify the domain using a regular expression. Regular expressions specified as a string will be compared as a string.
 
 ```js
 angular
