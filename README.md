@@ -1,4 +1,6 @@
 # angular-jwt
+[![FOSSA Status](https://app.fossa.com/api/projects/git%2Bgithub.com%2Fauth0%2Fangular-jwt.svg?type=shield)](https://app.fossa.com/projects/git%2Bgithub.com%2Fauth0%2Fangular-jwt?ref=badge_shield)
+
 
 This library will help you work with [JWTs](http://jwt.io/).
 
@@ -433,3 +435,6 @@ Auth0 helps you to:
 ## License
 
 This project is licensed under the MIT license. See the [LICENSE](LICENSE.txt) file for more info.
+
+
+[![FOSSA Status](https://app.fossa.com/api/projects/git%2Bgithub.com%2Fauth0%2Fangular-jwt.svg?type=large)](https://app.fossa.com/projects/git%2Bgithub.com%2Fauth0%2Fangular-jwt?ref=badge_large)
