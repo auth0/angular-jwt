@@ -1,3 +1,6 @@
+> **Warning**
+> This repository has been archived, the libaray has been deprecated, but remains available on NPM.
+
 # angular-jwt
 [![FOSSA Status](https://app.fossa.com/api/projects/git%2Bgithub.com%2Fauth0%2Fangular-jwt.svg?type=shield)](https://app.fossa.com/projects/git%2Bgithub.com%2Fauth0%2Fangular-jwt?ref=badge_shield)
 
